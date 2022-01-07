@@ -29,7 +29,7 @@ import json
 app = Flask(__name__)
 
 def init_logging():
-    logfile = 'web-corpus.log'
+    logfile = 'web_corpus.log'
 
     LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
     logger = logging.getLogger()
