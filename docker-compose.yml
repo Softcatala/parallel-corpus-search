@@ -14,7 +14,8 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data01:/home/jordi/dev/parallel-corpus-search/data
+      - ./data:/usr/share/elasticsearch/data
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - 9200:9200
     networks:
