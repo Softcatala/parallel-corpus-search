@@ -1,0 +1,4 @@
+elasticsearch==7.16
+flask==2.0.2
+gunicorn==20.1.0
+

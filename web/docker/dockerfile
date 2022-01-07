@@ -1,0 +1,10 @@
+FROM 3.10.1-slim-bullseye
+
+RUN pip install -r equirements.txt
+
+COPY web/docker/entrypoint.sh /srv/
+COPY web/*.py /srv/web/
+
+ENTRYPOINT srv/entrypoint.sh
+
+
