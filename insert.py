@@ -11,7 +11,15 @@ def main():
 
     start_time = datetime.datetime.now()
 
+    # Veure: https://techoverflow.net/2021/08/03/how-to-set-index-setting-using-python-elasticsearch-client/
     es = Elasticsearch('http://localhost:9200', timeout=30)
+
+    settings_body = {
+      "transient": { "cluster.routing.allocation.disk.threshold_enabled": "false" },
+      "index.blocks.read_only_allow_delete": "null",
+    }
+
+    es.cluster.put_settings(settings_body)
 
     BULK_ITEMS = 100000
     bulk_buffer = 0
@@ -48,9 +56,6 @@ def main():
             bulk_insert = []
 
             print(f"Inserted {id}")
-
-#            if id > 100:
-#                break
 
     s = 'Time: {0}'.format(datetime.datetime.now() - start_time)
     print(s)
