@@ -21,6 +21,13 @@ services:
     networks:
       - elastic
 
+  ui:
+    image: elastichq/elasticsearch-hq
+    ports:
+      - 5000:5000
+    networks:
+      - elastic
+
 volumes:
   data01:
     driver: local
