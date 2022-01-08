@@ -20,7 +20,7 @@ mkdir static_data
 sudo sysctl -w vm.max_map_count=262144
 docker pull $IMAGE_NAME
 
-docker run --rm --name es_build -d -p 9200:9200 -v "$(pwd)/elasticsearch.yml":/usr/share/elasticsearch/config/elasticsearch-build.yml \
+docker run --rm --name es_build -d -p 9200:9200 -v "$(pwd)/elasticsearch-build.yml":/usr/share/elasticsearch/config/elasticsearch.yml \
 -v "$(pwd)/static_data":/usr/share/elasticsearch/data -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" $IMAGE_NAME 
 
 echo "Starts inserting"
