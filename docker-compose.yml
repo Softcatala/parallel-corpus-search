@@ -1,5 +1,5 @@
 # This docker-compose is used only in local for development
-version: '2.2'
+version: '3'
 services:
   es01:
     #image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
@@ -15,8 +15,6 @@ services:
       memlock:
         soft: -1
         hard: -1
-    volumes:
-      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - 9200:9200
     networks:
