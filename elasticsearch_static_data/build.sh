@@ -1,5 +1,17 @@
 IMAGE_NAME=docker.elastic.co/elasticsearch/elasticsearch:7.16.2
 
+if [ ! -f src.txt ]
+then
+    wget https://www.softcatala.org/pub/softcatala/parallel-corpus-search/eng-cat.cat.zip
+    unzip eng-cat.cat.zip
+fi
+
+if [ ! -f tgt.txt ]
+then
+    wget https://www.softcatala.org/pub/softcatala/parallel-corpus-search/eng-cat.eng.zip
+    unzip eng-cat.eng.zip
+fi
+
 rm -r -f static_data
 mkdir static_data
 
