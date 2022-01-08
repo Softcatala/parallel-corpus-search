@@ -28,6 +28,9 @@ import json
 
 app = Flask(__name__)
 
+HTTP_OK = 200
+HTTP_ERROR = 500
+
 def init_logging():
     logfile = 'web_corpus.log'
 
@@ -59,39 +62,44 @@ def json_answer_status(data, status):
 def search_api(word):
     start_time = time.time()
 
-    #http://localhost:9200
-    es = Elasticsearch('es01:9200', timeout=30)
+    try:
 
-    query_body = {
-      "query": {
-          "match": {
-              "src": f"{word}"
+        #http://localhost:9200
+        es = Elasticsearch('es01:9200', timeout=30)
+
+        query_body = {
+          "query": {
+              "match": {
+                  "src": f"{word}"
+              }
           }
-      }
-    }
+        }
 
-    start_time = time.time()
+        start_time = time.time()
 
-    res = es.search(index="eng-cat", body=query_body)
-    num_results = 0#['hits']['total']['value']
-    print("Got %d Hits:" % res['hits']['total']['value'])
-    for hit in res['hits']['hits']:
-        print(f"{hit}")
+        res = es.search(index="eng-cat", body=query_body)
+        num_results = 0
+        elapsed_time = time.time() - start_time
+        logging.debug(f"/search for '{word}': {num_results} results, time: {elapsed_time:.2f}s")
 
-    elapsed_time = time.time() - start_time
-    logging.debug(f"/search for '{word}': {num_results} results, time: {elapsed_time:.2f}s")
+        hits = res['hits']['hits']
+        results = []
+        for hit in hits:
+            item = {}
+            item['src'] = hit['_source']['src']
+            item['trg'] = hit['_source']['trg']
+            results.append(item)
 
-    status = 200
-    hits = res['hits']['hits']
-    results = []
-    for hit in hits:
-        item = {}
-        item['src'] = hit['_source']['src']
-        item['trg'] = hit['_source']['trg']
-        results.append(item)
+        status = HTTP_OK
+
+    except Exception as e:
+        err = str(e)
+        logging.error(f"Error: {err}")
+        results = {}
+        results['error'] = err
+        status = HTTP_ERROR
 
     json_results = json.dumps(results, indent=4)
-
     return json_answer_status(json_results, status)
 
 
