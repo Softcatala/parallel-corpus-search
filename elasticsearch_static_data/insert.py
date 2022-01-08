@@ -1,25 +1,47 @@
-from datetime import datetime
 from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk
 from elasticsearch import helpers
+from urllib.request import Request, urlopen
+import time
 import datetime
+
+
+def check_link(url):
+    try:
+        req = Request(url)
+        urlopen(req, timeout=60)
+        return True
+
+    except Exception:
+        return False
+
+def wait_for_elastic_search(url):
+    TIME_SECS = 3 * 60
+    STEPS = 10
+
+    waited = 0
+    while waited < TIME_SECS:
+        if check_link(url):
+            print("URL is ready")
+            return
+
+        print("Waiting for URL to be ready")
+        time.sleep(STEPS)
+        waited += STEPS
+
+    print(f"Server {url} is not ready after {TIME_SECS} seconds")
+    exit(0)
+
 
 def main():
 
     print("Insert corpus")
 
+    URL = 'http://localhost:9200'
+    wait_for_elastic_search(URL)
+
+    es = Elasticsearch(URL, timeout=60)
 
     start_time = datetime.datetime.now()
-
-    # Veure: https://techoverflow.net/2021/08/03/how-to-set-index-setting-using-python-elasticsearch-client/
-    es = Elasticsearch('http://localhost:9200', timeout=30)
-
-    settings_body = {
-      "transient": { "cluster.routing.allocation.disk.threshold_enabled": "false" },
-      "index.blocks.read_only_allow_delete": "null",
-    }
-
-    es.cluster.put_settings(settings_body)
 
     BULK_ITEMS = 100000
     bulk_buffer = 0

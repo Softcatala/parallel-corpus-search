@@ -59,7 +59,8 @@ def json_answer_status(data, status):
 def search_api(word):
     start_time = time.time()
 
-    es = Elasticsearch('http://localhost:9200', timeout=30)
+    #http://localhost:9200
+    es = Elasticsearch('es01:9200', timeout=30)
 
     query_body = {
       "query": {

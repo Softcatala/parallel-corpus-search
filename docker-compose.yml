@@ -1,7 +1,9 @@
+# This docker-compose is used only in local for development
 version: '2.2'
 services:
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    #image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    image: elasticsearch-static
     container_name: es01
     environment:
       - node.name=es01
@@ -14,7 +16,6 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ./data:/usr/share/elasticsearch/data
       - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - 9200:9200
@@ -28,11 +29,12 @@ services:
     networks:
       - elastic
 
-volumes:
-  data01:
-    driver: local
-  data02:
-    driver: local
+  web-service:
+    image: parallel-corpus-search
+    ports:
+      - 8000:8000
+    networks:
+      - elastic
 
 networks:
   elastic:
