@@ -51,14 +51,13 @@ def main():
         id = 1
         while True:
 
-            src = source.readline()
-            trg = target.readline()
+            src = source.readline().strip()
+            trg = target.readline().strip()
 
             if not (src and trg):
                 break
 
             doc = {
-                'author': 'author_name',
                 '_index': "eng-cat",
                 '_id': id,
                 'src': src,
@@ -79,9 +78,14 @@ def main():
 
             print(f"Inserted {id}")
 
-    s = 'Time: {0}'.format(datetime.datetime.now() - start_time)
-    print(s)
+    res = es.indices.stats(index='eng-cat')
+    docs = res['indices']['eng-cat']['primaries']['docs']['count']
+    size_in_bytes = res['indices']['eng-cat']['primaries']['store']['size_in_bytes']
+    size_in_GB = size_in_bytes / 1024/1024/1024
 
+    s = 'Time used: {0}'.format(datetime.datetime.now() - start_time)
+    print(f"documents indexed {docs}, size in bytes {size_in_bytes} ({size_in_GB:.2f} GB)")
+    print(s)
 
 if __name__ == "__main__":
     main()
