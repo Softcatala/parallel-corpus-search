@@ -1,6 +1,6 @@
 FROM elasticsearch:7.16.2 
 
 RUN echo vm.max_map_count=262144 >> /etc/sysctl.conf
-COPY static_data/ /usr/share/elasticsearch/data/
+COPY data/ /usr/share/elasticsearch/data/
 COPY elasticsearch-run.yml /usr/share/elasticsearch/config/elasticsearch.yml
 

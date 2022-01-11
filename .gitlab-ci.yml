@@ -2,16 +2,40 @@ stages:
   - build
 
 build:
-  image: docker:latest
+  image: docker:stable
   services:
-    - docker:dind
+    - docker:stable-dind
   before_script:
+    - apk add --no-cache py-pip python3
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker info
     - export DATETAG=$(date +%Y%m%d-%H%M%S)
   stage: build
   script:
-    - docker build -f web/docker/dockerfile --cache-from $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:$DATETAG --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME .
+    - export IMAGE_NAME=docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    - docker stop es_build || true
+    - cd elasticsearch_static_data
+    - sh ./download.sh
+    - sysctl -w vm.max_map_count=262144
+    - cat /etc/hosts
+    # Run ES and insert data
+    - docker pull $IMAGE_NAME
+    - docker run --rm --name es_build -d -p 9200:9200 --env-file env.list $IMAGE_NAME 
+    - id=$(docker ps -aqf "name=es_build")
+    - echo Copying files
+    - docker cp insert.py $id:/opt/
+    - docker cp inside.sh $id:/opt/
+    - docker cp src.txt $id:/opt/
+    - docker cp tgt.txt $id:/opt/
+    - docker cp requirements.txt $id:/opt/
+    - echo Start Inserting data
+    - docker exec $id bash -c "/opt/inside.sh"
+    # Copy data
+    - id=$(docker ps -aqf "name=es_build")
+    - rm -r -f data && mkdir data
+    - docker cp $id:/usr/share/elasticsearch/data/ .
+    - docker stop es_build
+    # Publish image
+    - docker build -f dockerfile --cache-from $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:$DATETAG --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - docker push $CI_REGISTRY_IMAGE:$DATETAG
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME

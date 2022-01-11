@@ -22,7 +22,7 @@ def main():
     res = es.search(index="eng-cat", body=query_body)
     print("Got %d Hits:" % res['hits']['total']['value'])
     for hit in res['hits']['hits']:
-        print("%(timestamp)s %(author)s: %(src)s" % hit["_source"])
+        print("%(timestamp)s %(src)s" % hit["_source"])
 
     s = 'Time: {0}'.format(datetime.datetime.now() - start_time)
     print(s)

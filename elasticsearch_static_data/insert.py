@@ -36,7 +36,7 @@ def main():
 
     print("Insert corpus")
 
-    URL = 'http://localhost:9200'
+    URL = 'http://localhost:9200' 
     wait_for_elastic_search(URL)
 
     es = Elasticsearch(URL, timeout=60)
