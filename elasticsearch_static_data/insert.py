@@ -43,7 +43,7 @@ def main():
 
     start_time = datetime.datetime.now()
 
-    BULK_ITEMS = 100000
+    BULK_ITEMS = 10000
     bulk_buffer = 0
     bulk_insert = []
 
@@ -77,6 +77,9 @@ def main():
             bulk_insert = []
 
             print(f"Inserted {id}")
+
+            if id > 10000:
+                break
 
     res = es.indices.stats(index='eng-cat')
     docs = res['indices']['eng-cat']['primaries']['docs']['count']

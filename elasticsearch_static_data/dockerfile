@@ -34,14 +34,12 @@ RUN pushd /opt \
     && while ! httping -qc1 http://localhost:9200 ; do sleep 1 ; date; done \
     && python3 /opt/insert.py \
     && curl  -H 'Content-Type: application/json' -XPOST "http://localhost:9200/_search" -d'{ "query": { "match": { "src": "displayed" } } }' > /tmp/out \
-    && kill $(cat /tmp/epid) && wait $(cat /tmp/epid)
+    && kill $(cat /tmp/epid)
 
 
-# FROM elasticsearch:7.16.2
+FROM elasticsearch:7.16.2
 
-#RUN echo vm.max_map_count=262144 >> /etc/sysctl.conf
- 
-# COPY --from=build /usr/share/elasticsearch/data/ /usr/share/elasticsearch/data/
+RUN echo vm.max_map_count=262144 >> /etc/sysctl.conf
 
-#COPY elasticsearch_static_data/elasticsearch-run.yml /usr/share/elasticsearch/config/elasticsearch.yml
-
+COPY --from=build /usr/share/elasticsearch/data/ /usr/share/elasticsearch/data/
+COPY elasticsearch_static_data/elasticsearch-run.yml /usr/share/elasticsearch/config/elasticsearch.yml

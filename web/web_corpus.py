@@ -58,6 +58,11 @@ def json_answer_status(data, status):
     resp.status = str(status)
     return resp
 
+@app.route('/hello', methods=['GET'])
+def hello_api():
+    data={"data":"Hello World"}
+    return data
+
 @app.route('/search/<word>', methods=['GET'])
 def search_api(word):
     start_time = time.time()
