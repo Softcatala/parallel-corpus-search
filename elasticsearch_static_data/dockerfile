@@ -1,6 +1,47 @@
-FROM elasticsearch:7.16.2 
+FROM scratch as data
+
+ADD https://www.softcatala.org/pub/softcatala/parallel-corpus-search/eng-cat.eng.zip .
+ADD https://www.softcatala.org/pub/softcatala/parallel-corpus-search/eng-cat.cat.zip .
+
+FROM elasticsearch:7.16.2 as build
+
+RUN apt-get update
+RUN apt-get install python3-dev python3-pip procps httping -y
+
+COPY --from=data eng-cat.eng.zip .
+COPY --from=data eng-cat.cat.zip .
+
+RUN unzip -d /opt/ eng-cat.eng.zip
+RUN unzip -d /opt/ eng-cat.cat.zip
+
+COPY elasticsearch_static_data/insert.py /opt/
+COPY elasticsearch_static_data/inside.sh /opt/
+COPY elasticsearch_static_data/requirements.txt /opt/
+COPY elasticsearch_static_data/env.list /opt/
+
+RUN pip install -r /opt/requirements.txt
 
 RUN echo vm.max_map_count=262144 >> /etc/sysctl.conf
-COPY data/ /usr/share/elasticsearch/data/
-COPY elasticsearch-run.yml /usr/share/elasticsearch/config/elasticsearch.yml
+RUN sysctl -w vm.max_map_count=262144
+COPY elasticsearch_static_data/elasticsearch-build.yml /usr/share/elasticsearch/config/elasticsearch.yml
+RUN chmod -R a+r /usr/share/elasticsearch/config
+
+RUN mkdir -p /tmp/data
+RUN chmod a+rwx /tmp/data   
+
+RUN pushd /opt \
+    && ES_JAVA_OPTS="-Xms512m -Xmx512m" /usr/local/bin/docker-entrypoint.sh elasticsearch -d -p /tmp/epid \
+    && while ! httping -qc1 http://localhost:9200 ; do sleep 1 ; date; done \
+    && python3 /opt/insert.py \
+    && curl  -H 'Content-Type: application/json' -XPOST "http://localhost:9200/_search" -d'{ "query": { "match": { "src": "displayed" } } }' > /tmp/out \
+    && kill $(cat /tmp/epid) && wait $(cat /tmp/epid)
+
+
+# FROM elasticsearch:7.16.2
+
+#RUN echo vm.max_map_count=262144 >> /etc/sysctl.conf
+ 
+# COPY --from=build /usr/share/elasticsearch/data/ /usr/share/elasticsearch/data/
+
+#COPY elasticsearch_static_data/elasticsearch-run.yml /usr/share/elasticsearch/config/elasticsearch.yml
 

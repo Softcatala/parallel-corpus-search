@@ -29,7 +29,7 @@ def wait_for_elastic_search(url):
         waited += STEPS
 
     print(f"Server {url} is not ready after {TIME_SECS} seconds")
-    exit(0)
+    exit(1)
 
 
 def main():
