@@ -78,8 +78,8 @@ def main():
 
             print(f"Inserted {id}")
 
-            if id > 10000:
-                break
+            #if id > 10000:
+            #    break
 
     res = es.indices.stats(index='eng-cat')
     docs = res['indices']['eng-cat']['primaries']['docs']['count']
