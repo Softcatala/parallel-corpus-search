@@ -1,17 +1,25 @@
+include:
+  - project: 'docker/process-webhooks'
+    file: '/gitlab/deploy.yml'
+
+variables:
+  PROJECT_TO_BE_DEPLOYED: 'docker/parallel-corpus-search'
+
 image: docker:stable
 
 services:
 - docker:stable-dind
 
-before_script:
-- docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
 stages:
   - elasticsearch
   - webservice
+  - deploy
 
 elasticsearch:
   stage: elasticsearch
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - sysctl -w vm.max_map_count=262144
     - export REPO_NAME=$CI_REGISTRY_IMAGE/elasticsearch
@@ -22,9 +30,10 @@ elasticsearch:
     - docker push $IMAGE_NAME
 
 webservice:
-
   stage: webservice
   needs: []
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - export REPO_NAME=$CI_REGISTRY_IMAGE/webservice
     - export IMAGE_NAME=$REPO_NAME:$CI_COMMIT_REF_NAME
@@ -32,3 +41,9 @@ webservice:
     - docker build -f $DOCKER_PATH --tag $IMAGE_NAME --tag $REPO_NAME:$CI_COMMIT_SHA .
     - docker push $REPO_NAME:$CI_COMMIT_SHA
     - docker push $IMAGE_NAME
+
+
+deploy:
+  stage: deploy
+  extends:
+    .default-deploy
