@@ -13,5 +13,5 @@ This is done at ``/elasticsearch_static_data`` using ``build.sh``
 
 3. URLs when running
 
-* web-service Check ``http://localhost:8000/search/hacker``
+* web-service Check ``http://localhost:8200/search/?source=hacker``
 

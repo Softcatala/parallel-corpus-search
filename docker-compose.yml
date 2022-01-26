@@ -30,7 +30,7 @@ services:
   web-service:
     image: parallel-corpus-search
     ports:
-      - 8000:8000
+      - 8200:8200
     networks:
       - elastic
 
