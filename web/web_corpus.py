@@ -68,6 +68,7 @@ def search_api():
     start_time = time.time()
     source = request.args.get('source')
     target = request.args.get('target')
+    results = request.args.get('results')
 
     if source is not None and len(source) > 0:
         field = "src"
@@ -78,17 +79,24 @@ def search_api():
     else:
         return "Invalid parameters", 400
 
+    if results is not None and len(results) > 0:
+        size = int(results)
+        size = min(size, 500)
+    else:
+        size = 10
+
     try:
 
         #http://localhost:9200
         es = Elasticsearch('es01:9200', timeout=30)
 
         query_body = {
-          "query": {
-              "match": {
-                  f"{field}": f"{word}"
-              }
-          }
+            "size": size,
+            "query": {
+                "match": {
+                    f"{field}": f"{word}"
+                }
+            }
         }
 
         start_time = time.time()
