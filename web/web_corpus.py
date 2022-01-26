@@ -18,7 +18,7 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-from flask import Flask, Response
+from flask import Flask, request, Response
 from elasticsearch import Elasticsearch
 import logging
 import logging.handlers
@@ -63,9 +63,20 @@ def hello_api():
     data={"data":"Hello World"}
     return data
 
-@app.route('/search/<word>', methods=['GET'])
-def search_api(word):
+@app.route('/search/', methods=['GET'])
+def search_api():
     start_time = time.time()
+    source = request.args.get('source')
+    target = request.args.get('target')
+
+    if source is not None and len(source) > 0:
+        field = "src"
+        word = source
+    elif target is not None and len(target) > 0:
+        field = "trg"
+        word = target
+    else:
+        return "Invalid parameters", 400
 
     try:
 
@@ -75,7 +86,7 @@ def search_api(word):
         query_body = {
           "query": {
               "match": {
-                  "src": f"{word}"
+                  f"{field}": f"{word}"
               }
           }
         }

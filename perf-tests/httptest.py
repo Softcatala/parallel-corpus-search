@@ -48,7 +48,7 @@ try:
 
     for word in lines[:REQUESTS]:
         word = word.strip()
-        url = f'https://api.softcatala.org/parallel-corpus-search/v1/search/{word}'
+        url = f'https://api.softcatala.org/parallel-corpus-search/v1/search/?source={word}'
         q.put(url.strip())
 
     q.join()
