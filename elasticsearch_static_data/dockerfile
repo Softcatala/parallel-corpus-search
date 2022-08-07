@@ -15,7 +15,6 @@ RUN unzip -d /opt/ eng-cat.eng.zip
 RUN unzip -d /opt/ eng-cat.cat.zip
 
 COPY elasticsearch_static_data/insert.py /opt/
-COPY elasticsearch_static_data/inside.sh /opt/
 COPY elasticsearch_static_data/requirements.txt /opt/
 COPY elasticsearch_static_data/env.list /opt/
 
