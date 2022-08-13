@@ -1,18 +1,11 @@
-FROM scratch as data
-
-ADD https://www.softcatala.org/pub/softcatala/parallel-corpus-search/eng-cat.eng.zip .
-ADD https://www.softcatala.org/pub/softcatala/parallel-corpus-search/eng-cat.cat.zip .
+FROM registry.softcatala.org/serveis/parallel-corpus-search-eng-cat:main as data
 
 FROM elasticsearch:7.16.2 as build
 
 RUN apt-get update
 RUN apt-get install python3-dev python3-pip procps httping -y
 
-COPY --from=data eng-cat.eng.zip .
-COPY --from=data eng-cat.cat.zip .
-
-RUN unzip -d /opt/ eng-cat.eng.zip
-RUN unzip -d /opt/ eng-cat.cat.zip
+COPY --from=data /srv/corpus.tsv . /opt/
 
 COPY elasticsearch_static_data/insert.py /opt/
 COPY elasticsearch_static_data/requirements.txt /opt/

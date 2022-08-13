@@ -47,21 +47,24 @@ def main():
     bulk_buffer = 0
     bulk_insert = []
 
-    with open("src.txt", "r") as source, open("tgt.txt", "r") as target:
+    with open("corpus.tsv", "r") as source:
         id = 1
         while True:
 
             src = source.readline().strip()
-            trg = target.readline().strip()
 
-            if not (src and trg):
+            if not src:
                 break
 
+            components = src.split("\t")
             doc = {
                 '_index': "eng-cat",
                 '_id': id,
-                'src': src,
-                'trg': trg,
+                'src': components[0],
+                'trg': components[1],
+                'prio': components[2],
+                'license': components[3],
+                'project': components[4],
                 'timestamp': datetime.datetime.now()
             }
 
