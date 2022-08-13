@@ -112,6 +112,9 @@ def search_api():
             item = {}
             item['src'] = hit['_source']['src']
             item['trg'] = hit['_source']['trg']
+            item['prio'] = hit['_source']['prio']
+            item['license'] = hit['_source']['license']
+            item['project'] = hit['_source']['project']
             results.append(item)
 
         status = HTTP_OK
