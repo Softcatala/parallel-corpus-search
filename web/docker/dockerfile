@@ -1,4 +1,4 @@
-FROM python:3.10.1-slim-bullseye
+FROM python:3.10.4-slim-bullseye
 
 COPY web/requirements.txt /srv/
 COPY web/docker/entrypoint.sh /srv/
