@@ -63,6 +63,25 @@ def hello_api():
     data={"data":"Hello World"}
     return data
 
+def get_query(field, word, size):
+    query_body = {
+        "query": {
+            "function_score": {
+                "query": {
+                    "match" : {
+                        f"{field}": f"{word}"
+                    },
+                },
+                "field_value_factor": {
+                    "field" : "prio",
+                    "modifier": "reciprocal"
+                }
+            }
+        },
+        "size": size,
+    }
+    return query_body
+
 @app.route('/search/', methods=['GET'])
 def search_api():
     start_time = time.time()
@@ -87,18 +106,10 @@ def search_api():
 
     try:
 
-        #http://localhost:9200
+#        es = Elasticsearch('http://localhost:9200', timeout=30)
         es = Elasticsearch('es01:9200', timeout=30)
 
-        query_body = {
-            "size": size,
-            "query": {
-                "match": {
-                    f"{field}": f"{word}"
-                }
-            }
-        }
-
+        query_body = get_query(field, word, size)
         start_time = time.time()
 
         res = es.search(index="eng-cat", body=query_body)
