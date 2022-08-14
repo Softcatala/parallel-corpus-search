@@ -62,7 +62,7 @@ def main():
                 '_id': id,
                 'src': components[0],
                 'trg': components[1],
-                'prio': components[2],
+                'prio': int(components[2]),
                 'license': components[3],
                 'project': components[4],
                 'timestamp': datetime.datetime.now()
