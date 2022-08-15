@@ -31,6 +31,65 @@ def wait_for_elastic_search(url):
     print(f"Server {url} is not ready after {TIME_SECS} seconds")
     exit(1)
 
+def create_index(es, index_name):
+    if es.indices.exists(index_name):
+        es.indices.delete(index=index_name)
+
+    settings = {
+        "analysis": {
+          "filter": {
+            "catalan_elision": {
+              "type":       "elision",
+              "articles":   [ "d", "l", "m", "n", "s", "t"],
+              "articles_case": True
+            },
+            "catalan_stop": {
+              "type":       "stop",
+              "stopwords":  "_catalan_"
+            },
+            "catalan_keywords": {
+              "type":       "keyword_marker",
+              "keywords":   ["example"]
+            },
+            "catalan_stemmer": {
+              "type":       "stemmer",
+              "language":   "catalan"
+            }
+          },
+          "analyzer": {
+            "rebuilt_catalan": {
+              "tokenizer":  "standard",
+              "filter": [
+                "catalan_elision",
+                "lowercase",
+                "asciifolding",
+#                "catalan_stop",
+#                "catalan_keywords",
+#                "catalan_stemmer"
+              ]
+            }
+          }
+        }
+    }
+
+    es.indices.create(index=index_name, ignore=400, settings=settings)
+
+    mappings = {
+          "properties": {
+            "trg": {
+              "type": "text",
+              "fields": {
+                  "keyword": {
+                        "type": "keyword",
+                        "ignore_above": "256"
+                   }
+              },
+              "analyzer": "rebuilt_catalan"
+            }
+        }
+    }
+
+    es.indices.put_mapping(index=index_name,body=mappings)
 
 def main():
 
@@ -47,6 +106,7 @@ def main():
     bulk_buffer = 0
     bulk_insert = []
 
+    create_index(es, "eng-cat")
     with open("corpus.tsv", "r") as source:
         id = 1
         while True:
