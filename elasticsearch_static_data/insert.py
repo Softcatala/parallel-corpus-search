@@ -143,7 +143,7 @@ def main():
             #    break
 
     res = es.indices.stats(index='eng-cat')
-    docs = res['indices']['eng-cat']['primaries']['docs']['count']
+    docs = res['indices']['eng-cat']['total']['docs']['count']
     size_in_bytes = res['indices']['eng-cat']['primaries']['store']['size_in_bytes']
     size_in_GB = size_in_bytes / 1024/1024/1024
 
