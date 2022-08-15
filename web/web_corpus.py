@@ -115,12 +115,8 @@ def search_api():
         es = Elasticsearch('es01:9200', timeout=30)
 
         query_body = get_query(field, word, size)
-        start_time = time.time()
-
         res = es.search(index="eng-cat", body=query_body)
-        num_results = 0
         elapsed_time = time.time() - start_time
-        logging.debug(f"/search for '{word}': {num_results} results, time: {elapsed_time:.2f}s")
 
         hits = res['hits']['hits']
         results = []
@@ -135,6 +131,7 @@ def search_api():
             results.append(item)
 
         status = HTTP_OK
+        logging.debug(f"/search for '{word}': {len(results)} results, time: {elapsed_time:.2f}s")
 
     except Exception as e:
         err = str(e)
