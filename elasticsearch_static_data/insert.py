@@ -53,6 +53,13 @@ def main():
 
             src = source.readline().strip()
 
+            if bulk_buffer >= BULK_ITEMS or not src:
+                helpers.bulk(es, bulk_insert)
+                bulk_buffer = 0
+                bulk_insert = []
+
+                print(f"Inserted {id}")
+
             if not src:
                 break
 
@@ -71,15 +78,6 @@ def main():
             bulk_insert.append(doc)
             id += 1
             bulk_buffer += 1
-
-            if bulk_buffer <= BULK_ITEMS:
-                continue
-
-            helpers.bulk(es, bulk_insert)
-            bulk_buffer = 0
-            bulk_insert = []
-
-            print(f"Inserted {id}")
 
             #if id > 10000:
             #    break
