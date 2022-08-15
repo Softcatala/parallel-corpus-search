@@ -78,6 +78,11 @@ def get_query(field, word, size):
                 }
             }
         },
+       "highlight": {
+            "fields": {
+                f"{field}": {}
+                }
+        },
         "size": size,
     }
     return query_body
@@ -126,6 +131,7 @@ def search_api():
             item['prio'] = hit['_source']['prio']
             item['license'] = hit['_source']['license']
             item['project'] = hit['_source']['project']
+            item['highlight'] = hit['highlight']
             results.append(item)
 
         status = HTTP_OK
