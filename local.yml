@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  # This is an internal service that by network configuration cannot be access outside Softcatala
+  es01:
+    image: elasticsearch-static
+    restart: always
+
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=es01
+      - bootstrap.memory_lock=true
+      - ingest.geoip.downloader.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - node.processors=1
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+
+  #http://localhost:8200/search/?source=hacker
+  parallel-corpus-search:
+    image: parallel-corpus-search   
+    restart: always
+    ports:  
+      - 8200:8200
+
+# Uncomment to activate debugging
+#    environment:
+#      LOGLEVEL: 'DEBUG'
+
+
