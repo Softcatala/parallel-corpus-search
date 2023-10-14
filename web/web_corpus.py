@@ -25,6 +25,8 @@ import logging.handlers
 import os
 import time
 import json
+from datetime import datetime
+
 
 app = Flask(__name__)
 
@@ -86,6 +88,42 @@ def get_query(field, word, size):
         "size": size,
     }
     return query_body
+
+@app.route('/index_stats/', methods=['GET'])
+def index_stats_api():
+
+    results = {}
+    status = HTTP_OK
+
+    try:
+        INDEX_NAME = 'eng-cat'
+
+        es = Elasticsearch('es01:9200', timeout=30)
+
+        res = es.indices.stats(index=INDEX_NAME)
+        docs = res['indices'][INDEX_NAME]['total']['docs']['count']
+        size_in_bytes = res['indices'][INDEX_NAME]['primaries']['store']['size_in_bytes']
+        size_in_GB = size_in_bytes / 1024/1024/1024
+
+        index_info = es.indices.get(index=INDEX_NAME)
+        creation_date = index_info[INDEX_NAME]["settings"]["index"]["creation_date"]
+        ts = int(creation_date) / 1000
+        creation_date = datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+
+        results["indexed_docs"] = docs
+        results["index_size"] = f"{size_in_GB:.2f}GB"
+        results["creation_date"] = creation_date
+
+    except Exception as e:
+        err = str(e)
+        logging.error(f"Error: {err}")
+        results = {}
+        results['error'] = err
+        status = HTTP_ERROR
+
+    json_results = json.dumps(results, indent=4)
+    return json_answer_status(json_results, status)
+    
 
 @app.route('/search/', methods=['GET'])
 def search_api():
