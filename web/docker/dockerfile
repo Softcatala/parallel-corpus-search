@@ -1,4 +1,4 @@
-FROM python:3.10.4-slim-bullseye
+FROM python:3.12.0-slim-bullseye
 
 COPY web/requirements.txt /srv/
 RUN pip install -r srv/requirements.txt
@@ -7,5 +7,4 @@ COPY web/docker/entrypoint.sh /srv/
 COPY web/*.py /srv/
 
 ENTRYPOINT srv/entrypoint.sh
-
-
+RUN bash
