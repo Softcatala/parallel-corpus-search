@@ -140,6 +140,7 @@ def main():
             #if id > 10000:
             #    break
 
+    es.indices.refresh(index='eng-cat')
     res = es.indices.stats(index='eng-cat')
     docs = res['indices']['eng-cat']['total']['docs']['count']
     size_in_bytes = res['indices']['eng-cat']['primaries']['store']['size_in_bytes']
