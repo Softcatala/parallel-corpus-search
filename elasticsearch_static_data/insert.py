@@ -103,7 +103,6 @@ def main():
     start_time = datetime.datetime.now()
 
     BULK_ITEMS = 10000
-    bulk_buffer = 0
     bulk_insert = []
 
     create_index(es, "eng-cat")
@@ -115,10 +114,9 @@ def main():
             src = source.readline().strip()
             lines += 1
 
-            if bulk_buffer >= BULK_ITEMS or not src:
+            if len(bulk_buffer) >= BULK_ITEMS or not src:
                 helpers.bulk(es, bulk_insert)
                 print(f"Inserted {id} - total {len(bulk_insert)}")
-                bulk_buffer = 0
                 bulk_insert = []
 
             if not src:
@@ -138,7 +136,6 @@ def main():
 
             bulk_insert.append(doc)
             id += 1
-            bulk_buffer += 1
 
             #if id > 10000:
             #    break
