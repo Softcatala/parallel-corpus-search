@@ -12,21 +12,8 @@ services:
 
 
 stages:
-  - elasticsearch
   - webservice
   - deploy
-
-elasticsearch:
-  stage: elasticsearch
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - sysctl -w vm.max_map_count=262144
-    - export REPO_NAME=$CI_REGISTRY_IMAGE/elasticsearch
-    - export IMAGE_NAME=$REPO_NAME:$CI_COMMIT_REF_NAME
-    - export DOCKER_PATH=elasticsearch_static_data/dockerfile
-    - docker build --no-cache -f $DOCKER_PATH --tag $IMAGE_NAME .
-    - docker push $IMAGE_NAME
 
 webservice:
   stage: webservice
