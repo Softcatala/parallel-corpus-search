@@ -25,8 +25,7 @@ elasticsearch:
     - export REPO_NAME=$CI_REGISTRY_IMAGE/elasticsearch
     - export IMAGE_NAME=$REPO_NAME:$CI_COMMIT_REF_NAME
     - export DOCKER_PATH=elasticsearch_static_data/dockerfile
-    - docker build --no-cache -f $DOCKER_PATH --tag $IMAGE_NAME --tag $REPO_NAME:$CI_COMMIT_SHA .
-    - docker push $REPO_NAME:$CI_COMMIT_SHA
+    - docker build --no-cache -f $DOCKER_PATH --tag $IMAGE_NAME .
     - docker push $IMAGE_NAME
 
 webservice:
@@ -38,8 +37,7 @@ webservice:
     - export REPO_NAME=$CI_REGISTRY_IMAGE/webservice
     - export IMAGE_NAME=$REPO_NAME:$CI_COMMIT_REF_NAME
     - export DOCKER_PATH=web/docker/dockerfile
-    - docker build -f $DOCKER_PATH --tag $IMAGE_NAME --tag $REPO_NAME:$CI_COMMIT_SHA .
-    - docker push $REPO_NAME:$CI_COMMIT_SHA
+    - docker build -f $DOCKER_PATH --tag $IMAGE_NAME .
     - docker push $IMAGE_NAME
 
 
