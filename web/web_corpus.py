@@ -82,11 +82,14 @@ def get_query(field, word, size):
         },
        "highlight": {
             "fields": {
-                f"{field}": {"fragment_size" : 1024}
+                f"{field}": {
+                    "fragment_size": 1024
                 }
+            }
         },
         "size": size,
     }
+    logging.error(query_body)
     return query_body
 
 @app.route('/index_stats/', methods=['GET'])
@@ -157,6 +160,7 @@ def search_api():
         elapsed_time = time.time() - start_time
 
         hits = res['hits']['hits']
+        logging.error(f"hits: {hits}")
         results = []
         for hit in hits:
             item = {}
