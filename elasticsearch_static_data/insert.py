@@ -115,7 +115,7 @@ def main():
             lines += 1
 
             if len(bulk_insert) >= BULK_ITEMS or not src:
-                helpers.bulk(es, bulk_insert)
+                helpers.bulk(es, bulk_insert, refresh=False)
                 print(f"Inserted {id} - total {len(bulk_insert)}")
                 bulk_insert = []
 
