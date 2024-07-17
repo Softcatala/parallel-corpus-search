@@ -114,7 +114,7 @@ def main():
             src = source.readline().strip()
             lines += 1
 
-            if len(bulk_buffer) >= BULK_ITEMS or not src:
+            if len(bulk_insert) >= BULK_ITEMS or not src:
                 helpers.bulk(es, bulk_insert)
                 print(f"Inserted {id} - total {len(bulk_insert)}")
                 bulk_insert = []
