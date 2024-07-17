@@ -102,23 +102,24 @@ def main():
 
     start_time = datetime.datetime.now()
 
-    BULK_ITEMS = 20000
+    BULK_ITEMS = 10000
     bulk_buffer = 0
     bulk_insert = []
 
     create_index(es, "eng-cat")
+    lines = 0
     with open("corpus.tsv", "r") as source:
         id = 1
         while True:
 
             src = source.readline().strip()
+            lines += 1
 
             if bulk_buffer >= BULK_ITEMS or not src:
                 helpers.bulk(es, bulk_insert)
+                print(f"Inserted {id} - total {len(bulk_insert)}")
                 bulk_buffer = 0
                 bulk_insert = []
-
-                print(f"Inserted {id}")
 
             if not src:
                 break
@@ -147,6 +148,7 @@ def main():
     size_in_bytes = res['indices']['eng-cat']['primaries']['store']['size_in_bytes']
     size_in_GB = size_in_bytes / 1024/1024/1024
 
+    print(f"lines: {lines}")
     s = 'Time used: {0}'.format(datetime.datetime.now() - start_time)
     print(f"documents indexed {docs}, size in bytes {size_in_bytes} ({size_in_GB:.2f} GB)")
     print(s)
