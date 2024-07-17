@@ -102,7 +102,7 @@ def main():
 
     start_time = datetime.datetime.now()
 
-    BULK_ITEMS = 10000
+    BULK_ITEMS = 20000
     bulk_buffer = 0
     bulk_insert = []
 
