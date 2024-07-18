@@ -103,7 +103,6 @@ def main():
     start_time = datetime.datetime.now()
 
     BULK_ITEMS = 10000
-    bulk_buffer = 0
     bulk_insert = []
 
     create_index(es, "eng-cat")
@@ -113,12 +112,12 @@ def main():
 
             src = source.readline().strip()
 
-            if bulk_buffer >= BULK_ITEMS or not src:
-                helpers.bulk(es, bulk_insert)
-                bulk_buffer = 0
+            if len(bulk_insert) >= BULK_ITEMS or not src:
+                helpers.bulk(es, bulk_insert, refresh=False)
+                seconds = (datetime.datetime.now() - start_time).total_seconds()
+                itemssec = id / seconds if seconds > 0 else 1
+                print(f"Items inserted {id} - {itemssec:.2f} items/s")
                 bulk_insert = []
-
-                print(f"Inserted {id}")
 
             if not src:
                 break
@@ -137,11 +136,11 @@ def main():
 
             bulk_insert.append(doc)
             id += 1
-            bulk_buffer += 1
 
             #if id > 10000:
             #    break
 
+    es.indices.refresh(index='eng-cat')
     res = es.indices.stats(index='eng-cat')
     docs = res['indices']['eng-cat']['total']['docs']['count']
     size_in_bytes = res['indices']['eng-cat']['primaries']['store']['size_in_bytes']
