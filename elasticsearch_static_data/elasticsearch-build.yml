@@ -3,3 +3,5 @@ node.name: "es01"
 cluster:
   name: "es-docker-cluster"
   initial_master_nodes: "es01"
+  
+xpack.security.enabled: false

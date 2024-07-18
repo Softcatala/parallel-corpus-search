@@ -4,7 +4,6 @@ from urllib.request import Request, urlopen
 import time
 import datetime
 
-
 def check_link(url):
     try:
         req = Request(url)
@@ -32,7 +31,7 @@ def wait_for_elastic_search(url):
     exit(1)
 
 def create_index(es, index_name):
-    if es.indices.exists(index_name):
+    if es.indices.exists(index=index_name):
         es.indices.delete(index=index_name)
 
     settings = {
@@ -98,7 +97,7 @@ def main():
     URL = 'http://localhost:9200' 
     wait_for_elastic_search(URL)
 
-    es = Elasticsearch(URL, timeout=60)
+    es = Elasticsearch(URL, request_timeout=60)
 
     start_time = datetime.datetime.now()
 
