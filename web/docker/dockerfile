@@ -7,4 +7,3 @@ COPY web/docker/entrypoint.sh /srv/
 COPY web/*.py /srv/
 
 ENTRYPOINT srv/entrypoint.sh
-RUN bash
