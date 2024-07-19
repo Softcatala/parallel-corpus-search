@@ -70,9 +70,25 @@ def get_query(field, word, size):
         "query": {
             "function_score": {
                 "query": {
-                    "match" : {
-                        f"{field}": f"{word}"
-                    },
+                    "bool": {
+                        "should": [
+                            {
+                                "match_phrase": {
+                                    f"{field}": {
+                                        "query": f"{word}",
+                                        "boost": 2
+                                    }
+                                }
+                            },
+                            {
+                                "match": {
+                                    f"{field}": {
+                                        "query": f"{word}"
+                                    }
+                                }
+                            }
+                        ]
+                    }
                 },
                 "field_value_factor": {
                     "field" : "prio",
