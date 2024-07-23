@@ -99,7 +99,7 @@ def get_query(field, word, size):
        "highlight": {
             "fields": {
                 f"{field}": {
-                    "fragment_size": 1024
+                    "number_of_fragments" : 0
                 }
             }
         },
